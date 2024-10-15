@@ -1,0 +1,56 @@
+pipeline {
+    agent any // Use any available agent for the pipeline
+
+    environment {
+        // Set environment variables for Maven and Java
+        MAVEN_HOME = 'C:\Dev\apache-maven-3.9.9'
+        JAVA_HOME = 'C:\Program Files\Java\jdk-17'
+        // Update the PATH environment variable to include Maven and Java binaries
+        PATH = "${env.MAVEN_HOME}\\bin;${env.JAVA_HOME}\\bin;${env.PATH}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from the specified Git repository and branch
+                git branch: 'main', url: 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
+            }
+        }
+        stage('Clean') {
+            steps {
+                // Run the Maven clean command to clean the project
+                bat "${MAVEN_HOME}\\bin\\mvn clean"
+            }
+        }
+        stage('Validate') {
+            steps {
+                // Run the Maven validate command to validate the project
+                bat "${MAVEN_HOME}\\bin\\mvn validate"
+            }
+        }
+        stage('Compile') {
+            steps {
+                // Run the Maven compile command to compile the project
+                bat "${MAVEN_HOME}\\bin\\mvn compile"
+            }
+        }
+        stage('Test') {
+            steps {
+                // Run the Maven test command to test the project
+                bat "${MAVEN_HOME}\\bin\\mvn test"
+            }
+        }
+        stage('Package') {
+            steps {
+                // Run the Maven package command to package the project
+                bat "${MAVEN_HOME}\\bin\\mvn package"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Run the Maven deploy command to deploy the project
+                bat "${MAVEN_HOME}\\bin\\mvn deploy"
+            }
+        }
+    }
+}
