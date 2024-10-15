@@ -53,7 +53,13 @@ pipeline {
 
             }
         }
-
+        stage('Run Application') {
+            steps {
+                // Run the Java application using the compiled JAR file
+                echo "Running the Java application..."
+                bat "java -jar ${WORKSPACE}\\target\\M1A_1240481_1240482-1.0-SNAPSHOT.jar --server.port=8081"
+            }
+        }
 
     }
 }
