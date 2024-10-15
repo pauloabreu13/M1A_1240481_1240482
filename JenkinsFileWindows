@@ -48,9 +48,12 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                // Run the Maven deploy command to deploy the project
-                bat "${MAVEN_HOME}\\bin\\mvn deploy"
+                // Run the Maven deploy command to deploy the project and save to the target folder inside the project
+                bat "${MAVEN_HOME}\\bin\\mvn deploy -DaltDeploymentRepository=local::default::file:${WORKSPACE}\\target"
+
             }
         }
+
+
     }
 }
