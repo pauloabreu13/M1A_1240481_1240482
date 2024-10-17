@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        MAVEN_HOME = '/usr/share/maven'
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        PATH = "${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
+        SSH_KEY = '/path/to/your/private_key' // Chave SSH para autenticação
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
+            }
+        }
+        stage('Clean') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn clean"
+            }
+        }
+        stage('Validate') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn validate"
+            }
+        }
+        stage('Compile') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn compile"
+            }
+        }
+        stage('Test') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn test"
+            }
+        }
+        stage('Package') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn package"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Transferir o ficheiro JAR para o servidor remoto
+                sh """
+                scp -i \$SSH_KEY -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vs-gate.dei.isep.ipp.pt:/usr/local/librarymanager
+                """
+                echo "Deploying application..."
+
+                // Executar a aplicação Spring Boot no servidor remoto com porta personalizada
+                sh """
+                ssh -i \$SSH_KEY -p 11363 root@vs-gate.dei.isep.ipp.pt "nohup java -jar /usr/local/librarymanager/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2226 > /dev/null 2>&1 &"
+                """
+            }
+        }
+    }
+}
+
+}
