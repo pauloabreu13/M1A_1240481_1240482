@@ -34,4 +34,10 @@ pipeline {
                 sh "${MAVEN_HOME}/bin/mvn validate"
             }
         }
+         stage('Compile') {
+            steps {
+                // Compile the source code
+                sh "${MAVEN_HOME}/bin/mvn compile"
+            }
+        }
     }
