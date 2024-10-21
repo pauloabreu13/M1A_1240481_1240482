@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+
         // LINUX
         MAVEN_HOME = '/usr/share/maven'
         JAVA_HOME = '/usr/share/java'
@@ -40,3 +41,4 @@ pipeline {
             }
         }
     }
+}
