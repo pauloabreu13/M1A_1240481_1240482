@@ -74,6 +74,7 @@ pipeline {
                     '
                     """
 
+
                     // Create the destination directory if it doesn't exist
                     sh """
                     ssh -i \$SSH_KEY -o StrictHostKeyChecking=no -p 11319 root@vsgate-ssh.dei.isep.ipp.pt '
