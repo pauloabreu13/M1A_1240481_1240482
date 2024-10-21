@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    environment {
+
+        // LINUX
+        MAVEN_HOME = '/usr/share/maven'
+        JAVA_HOME = '/usr/share/java'
+
+
+        // Define the GitHub repository URL as an environment variable
+        GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
+        GITHUB_BRANCH = 'main'
+        GITHUB_ID = 'githubaccesstoken'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the code from your repository
+                git url: "${GITHUB_URL}", branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_ID}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Clean, compile, and package the application using Maven
+                sh "${MAVEN_HOME}/bin/mvn clean install"
+            }
+        }
+        stage('Validate') {
+            steps {
+                // Validate the project structure
+                sh "${MAVEN_HOME}/bin/mvn validate"
+            }
+        }
