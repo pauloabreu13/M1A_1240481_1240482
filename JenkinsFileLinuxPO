@@ -12,7 +12,7 @@ pipeline {
         GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
         GITHUB_BRANCH = 'main'
         GITHUB_ID = 'githubaccesstoken'
-        SONAR_TOKEN = 'squ_758a463b9959b1f061c934189bfd0dc8871dccc8'
+        //SONAR_TOKEN = 'squ_758a463b9959b1f061c934189bfd0dc8871dccc8'
     }
 
     stages {
@@ -52,7 +52,7 @@ pipeline {
         stage('SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.login=${SONAR_TOKEN}'
+                    sh "${MAVEN_HOME}/bin/mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:6.2.1.4610:sonar'
                 }
             }
         }
