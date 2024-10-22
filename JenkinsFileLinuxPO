@@ -50,8 +50,8 @@ pipeline {
 
         stage('SonarQube') {
             steps {
-                withSonarQubeEnv(installationName: 'sonarqube') {
-                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar"
+                withSonarQubeEnv(installationName: 'SonarQube') {
+                    sh "${MAVEN_HOME}/bin/mvn clean verify sonar:sonar"
                 }
             }
         }
