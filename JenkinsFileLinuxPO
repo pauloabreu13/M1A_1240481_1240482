@@ -29,7 +29,8 @@ pipeline {
         stage('SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh "${MAVEN_HOME}/bin/mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar -Dsonar.host.url=http://192.168.1.176:9000"
+                    def sonarToken = credentials('jenkins_sonar')
+                    sh "${MAVEN_HOME}/bin/mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar -Dsonar.host.url=http://192.168.1.176:9000 -Dsonar.login=${sonarToken}"
 
                 }
             }
