@@ -26,13 +26,19 @@ pipeline {
 
 
 
-        stage('SonarQube analysis') {
-            withSonarQubeEnv('SonarQube') {
-                withCredentials([string(credentialsId: 'jenkins_sonar', variable: 'SONAR_TOKEN')]) {
-                    sh "${MAVEN_HOME}/bin/mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar -Dsonar.host.url=http://192.168.1.176:9000 -Dsonar.login=\$SONAR_TOKEN"
+    stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([string(credentialsId: 'jenkins_sonar', variable: 'SONAR_TOKEN')]) {
+                        sh """
+                            ${MAVEN_HOME}/bin/mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar \
+                            -Dsonar.host.url=http://192.168.1.176:9000 \
+                            -Dsonar.login=\$SONAR_TOKEN
+                        """
+                    }
                 }
             }
-        }
+    }
 
 
         stage('Package') {
