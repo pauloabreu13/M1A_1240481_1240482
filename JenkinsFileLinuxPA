@@ -6,42 +6,67 @@ pipeline {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
         PATH = "${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
         SSH_KEY = '/path/to/your/private_key' // Chave SSH para autenticação
+
+        GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
+        GITHUB_BRANCH = 'main'
+        GITHUB_ID = 'githubaccesstoken'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
+                git url: "${GITHUB_URL}", branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_ID}"
             }
         }
+
         stage('Clean') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn clean"
             }
         }
+
         stage('Validate') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn validate"
             }
         }
+
         stage('Compile') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn compile"
             }
         }
+
         stage('Test') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn test"
             }
         }
+
         stage('Package') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn package"
             }
         }
+
         stage('Deploy') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'itaWcvKyxzS44u+XqcF5', keyFileVariable: 'SSH_KEY')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'MySSHKey', keyFileVariable: 'SSH_KEY')]) {
+
+                    // Stop the old version of the application running on port 2226
+                    sh """
+                    ssh -i \$SSH_KEY -o StrictHostKeyChecking=no -p 11363 root@vsgate-ssh.dei.isep.ipp.pt '
+                        # Find the PID of the process running on port 2226 and kill it
+                        pid=\$(lsof -ti:2226)
+                        if [ ! -z "\$pid" ]; then
+                            echo "Killing process ID: \$pid on port 2226"
+                            kill -9 \$pid
+                        else
+                            echo "No process found running on port 2226."
+                        fi
+                    '
+                    """
 
                     // Transferir o ficheiro JAR para o servidor remoto.
                     sh """
