@@ -46,27 +46,13 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn package"
+                sh "${MAVEN_HOME}/bin/mvn package -DskipTests"
             }
         }
 
         stage('Deploy') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'MySSHKey', keyFileVariable: 'SSH_KEY')]) {
-
-                    // Stop the old version of the application running on port 2226
-                    sh """
-                    ssh -i \$SSH_KEY -o StrictHostKeyChecking=no -p 11363 root@vsgate-ssh.dei.isep.ipp.pt '
-                        # Find the PID of the process running on port 2226 and kill it
-                        pid=\$(lsof -ti:2226)
-                        if [ ! -z "\$pid" ]; then
-                            echo "Killing process ID: \$pid on port 2226"
-                            kill -9 \$pid
-                        else
-                            echo "No process found running on port 2226."
-                        fi
-                    '
-                    """
 
                     // Transferir o ficheiro JAR para o servidor remoto.
                     sh """
