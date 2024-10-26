@@ -46,6 +46,14 @@ pipeline {
                 bat "${MAVEN_HOME}\\bin\\mvn package"
             }
         }
+
+        stage('SonarQube Analysis') {
+            def mvn = tool 'Default Maven';
+            withSonarQubeEnv('jenkins_sonar') {
+              sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=OdSoft -Dsonar.projectName='OdSoft'"
+            }
+          }
+
         stage('Deploy') {
             steps {
                 // Run the Maven deploy command to deploy the project and save to the target folder inside the project
