@@ -47,10 +47,10 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonar_jenkins') {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=lms-sonar -Dsonar.projectName='OdSoft' -Dsonar.host.url=http://localhost:9000' //port 9000 is default for sonar
+                withSonarQubeEnv('jenkins_sonar') {
+                    bat '''mvn sonar:sonar -Dsonar.projectKey=lms-sonar -Dsonar.projectName='OdSoft' -Dsonar.host.url=http://localhost:9000'''
                     echo 'SonarQube Analysis Completed'
                 }
             }
