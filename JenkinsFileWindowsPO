@@ -50,7 +50,7 @@ pipeline {
 stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('jenkins_sonar') {
-                    bat '''mvn sonar:sonar -Dsonar.projectKey=lms-sonar -Dsonar.projectName='OdSoft' -Dsonar.host.url=http://localhost:9000'''
+                    bat '''mvn sonar:sonar -Dsonar.projectKey=Odsoft -Dsonar.projectName='OdSoft' -Dsonar.host.url=http://localhost:9000'''
                     echo 'SonarQube Analysis Completed'
                 }
             }
