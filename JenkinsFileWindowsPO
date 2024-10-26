@@ -48,11 +48,13 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            def mvn = tool 'Default Maven';
-            withSonarQubeEnv('jenkins_sonar') {
-              sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=OdSoft -Dsonar.projectName='OdSoft'"
+            steps {
+                withSonarQubeEnv('sonar_jenkins') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=lms-sonar -Dsonar.projectName='OdSoft' -Dsonar.host.url=http://localhost:9000' //port 9000 is default for sonar
+                    echo 'SonarQube Analysis Completed'
+                }
             }
-          }
+        }
 
         stage('Deploy') {
             steps {
