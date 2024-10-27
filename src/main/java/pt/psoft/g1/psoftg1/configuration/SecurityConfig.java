@@ -106,8 +106,12 @@ public class SecurityConfig {
                 exceptions -> exceptions.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
 
+        http.csrf(csrf -> csrf.disable());
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+
         // Set permissions on endpoints
         http.authorizeHttpRequests()
+                .requestMatchers("/h2-console/**").permitAll()
                 // Swagger endpoints must be publicly accessible
                 .requestMatchers("/").permitAll()
                 .requestMatchers(format("%s/**", restApiDocPath)).permitAll()

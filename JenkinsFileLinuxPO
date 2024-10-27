@@ -12,7 +12,7 @@ pipeline {
         GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
         GITHUB_BRANCH = 'main'
         GITHUB_ID = 'githubaccesstoken'
-        //SONAR_TOKEN = 'squ_758a463b9959b1f061c934189bfd0dc8871dccc8'
+
     }
 
     stages {
@@ -23,28 +23,33 @@ pipeline {
             }
         }
 
-
-
-
-    stage('SonarQube analysis') {
+        stage('Build') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    withCredentials([string(credentialsId: 'jenkins_sonar', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                            ${MAVEN_HOME}/bin/mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar \
-                            -Dsonar.host.url=http://192.168.1.176:9000 \
-                            -Dsonar.login=\$SONAR_TOKEN
-                        """
-                    }
-                }
+                sh "${MAVEN_HOME}/bin/mvn clean install"
             }
-    }
+        }
 
+        stage('Validate') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn validate"
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn compile"
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn test"
+            }
+        }
 
         stage('Package') {
             steps {
-                // Package the application
-                sh "${MAVEN_HOME}/bin/mvn package"
+                sh "${MAVEN_HOME}/bin/mvn package -DskipTests"
             }
         }
 
@@ -53,16 +58,16 @@ pipeline {
                 // Use the SSH key with the specified credentials ID (set on Jenkins)
                 withCredentials([sshUserPrivateKey(credentialsId: 'MySSHKey', keyFileVariable: 'SSH_KEY')]) {
 
-                    // Stop the old version of the application running on port 2226
+                    // Stop the old version of the application running on port 2228
                     sh """
                     ssh -i \$SSH_KEY -o StrictHostKeyChecking=no -p 11319 root@vsgate-ssh.dei.isep.ipp.pt '
-                        # Find the PID of the process running on port 2226 and kill it
-                        pid=\$(lsof -ti:2226)
+                        # Find the PID of the process running on port 2228 and kill it
+                        pid=\$(lsof -ti:2228)
                         if [ ! -z "\$pid" ]; then
-                            echo "Killing process ID: \$pid on port 2226"
+                            echo "Killing process ID: \$pid on port 2228"
                             kill -9 \$pid
                         else
-                            echo "No process found running on port 2226."
+                            echo "No process found running on port 2228."
                         fi
                     '
                     """
@@ -79,9 +84,25 @@ pipeline {
                     sh """
                     scp -i \$SSH_KEY -P 11319 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
                     """
+
+                    echo "Deploying application..."
+                    // Run the Spring Boot application on the remote server with the overridden server port
+                    sh 'ssh -i \$SSH_KEY -p 11319 root@vsgate-ssh.dei.isep.ipp.pt "nohup java -jar /usr/local/M1A_1240481_1240482/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"'
+
                 }
             }
         }
-    }
 
+
+    }
+     post {
+            success {
+                // Actions to take when the pipeline succeeds
+                echo 'Pipeline completed successfully!'
+            }
+            failure {
+                // Actions to take when the pipeline fails
+                echo 'Pipeline failed!'
+            }
+     }
 }
