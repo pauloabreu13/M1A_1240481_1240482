@@ -63,8 +63,8 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQubeToken') {
-                    bat '''mvn sonar:sonar -Dsonar.projectKey=SonarQube -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000'''
+                withSonarQubeEnv('SonarQube') {
+                    bat '''mvn sonar:sonar -Dsonar.projectKey=SonarQubeToken -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000'''
                     echo 'SonarQube Analysis Completed'
                 }
             }
