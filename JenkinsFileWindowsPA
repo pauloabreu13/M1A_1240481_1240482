@@ -2,19 +2,18 @@ pipeline {
     agent any // Use any available agent for the pipeline
 
     environment {
-        // Set environment variables for Maven and Java
         MAVEN_HOME = 'C:\\Dev\\apache-maven-3.9.9'
         JAVA_HOME = 'C:\\Java\\openlogic-openjdk-17.0.12+7-windows-x64'
-        // Update the PATH environment variable to include Maven and Java binaries
-        PATH = "${env.MAVEN_HOME}\\bin;${env.JAVA_HOME}\\bin;${env.PATH}"
+
+        GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
+        GITHUB_BRANCH = 'main'
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                // Checkout the source code from the specified Git repository and branch
-                git branch: 'main', url: 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
+                git url: "${GITHUB_URL}", branch: "${GITHUB_BRANCH}"
             }
         }
 

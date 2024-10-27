@@ -4,8 +4,6 @@ pipeline {
     environment {
         MAVEN_HOME = '/usr/share/maven'
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
-        //PATH = "${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
-        //SSH_KEY = '/path/to/your/private_key' // Chave SSH para autenticação
 
         GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
         GITHUB_BRANCH = 'main'
@@ -50,6 +48,16 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                 // Análise de código com o SonarQube
+                 withSonarQubeEnv('SonarQube') {
+                      sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=SonarQubeToken -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000"
+                 }
+                 echo 'SonarQube Analysis Completed'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 // Use the SSH key with the specified credentials ID (set on Jenkins)
@@ -84,6 +92,14 @@ pipeline {
 
 
                 }
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                // Executar o ficheiro JAR localmente na máquina virtual
+                echo "Running the Java application on Linux..."
+                sh "nohup java -jar ${WORKSPACE}/target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081 > /dev/null 2>&1 &"
             }
         }
     }
