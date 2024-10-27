@@ -49,15 +49,7 @@ pipeline {
         stage('Package') {
             steps {
                 // Run the Maven package command to package the project
-                bat "${MAVEN_HOME}\\bin\\mvn package"
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                // Run the Maven deploy command to deploy the project and save to the target folder inside the project
-                bat "${MAVEN_HOME}\\bin\\mvn deploy -DaltDeploymentRepository=local::default::file:${WORKSPACE}\\target"
-
+                bat "${MAVEN_HOME}\\bin\\mvn package -DskipTests"
             }
         }
 
@@ -67,6 +59,14 @@ pipeline {
                     bat '''mvn sonar:sonar -Dsonar.projectKey=SonarQubeToken -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000'''
                     echo 'SonarQube Analysis Completed'
                 }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // Run the Maven deploy command to deploy the project and save to the target folder inside the project
+                bat "${MAVEN_HOME}\\bin\\mvn deploy -DaltDeploymentRepository=local::default::file:${WORKSPACE}\\target"
+
             }
         }
 
