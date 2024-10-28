@@ -19,10 +19,10 @@ pipeline {
                 git url: "${GITHUB_URL}", branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_ID}"
             }
         }
-
-        stage('Build') {
+        stage('Clean') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn clean install"
+                // Run the Maven clean command to clean the project
+                sh "${MAVEN_HOME}\\bin\\mvn clean"
             }
         }
 
@@ -89,7 +89,7 @@ pipeline {
 
                     // Secure copy of the project
                     sh """
-                        scp -i \$SSH_KEY -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
+                        scp -i \$SSH_KEY -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
                     """
 
 
@@ -99,9 +99,8 @@ pipeline {
 
         stage('Run Application') {
             steps {
-                // Executar o ficheiro JAR localmente na máquina virtual
                 echo "Running the Java application on Linux..."
-                sh "nohup java -jar ${WORKSPACE}/target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081 > /dev/null 2>&1 &"
+                sh "nohup java -jar ${WORKSPACE}/target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
             }
         }
     }
