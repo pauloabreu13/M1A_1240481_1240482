@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.hibernate.StaleObjectStateException;
 import pt.psoft.g1.psoftg1.authormanagement.services.UpdateAuthorRequest;
 import pt.psoft.g1.psoftg1.exceptions.ConflictException;
-import pt.psoft.g1.psoftg1.idgenerate.helper.IdGen;
 import pt.psoft.g1.psoftg1.shared.model.EntityWithPhoto;
 import pt.psoft.g1.psoftg1.shared.model.Name;
 
@@ -16,11 +15,6 @@ public class Author extends EntityWithPhoto {
     @Column(name = "AUTHOR_NUMBER")
     @Getter
     private Long authorNumber;
-
-
-    //Usar isto para gerar o hexadecimal
-//    @Column(name = "HEX_AUTHOR_ID", nullable = false, unique = true)
-//    private String hexadecimalAuthorId;
 
     @Version
     private long version;
@@ -57,13 +51,6 @@ public class Author extends EntityWithPhoto {
         // got ORM only
     }
 
-//    @PrePersist
-//    public void prePersist() {
-//        if (this.hexadecimalAuthorId == null || this.hexadecimalAuthorId.isEmpty()) {
-//            this.hexadecimalAuthorId = IdGen.generateId();
-//        }
-//    }
-
 
     public void applyPatch(final long desiredVersion, final UpdateAuthorRequest request) {
         if (this.version != desiredVersion)
@@ -91,4 +78,5 @@ public class Author extends EntityWithPhoto {
         return this.bio.toString();
     }
 }
+
 

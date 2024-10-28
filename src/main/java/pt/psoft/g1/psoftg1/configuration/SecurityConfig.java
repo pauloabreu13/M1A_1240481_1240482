@@ -106,85 +106,75 @@ public class SecurityConfig {
                 exceptions -> exceptions.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
 
-        http.csrf(csrf -> csrf.disable());
-        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
-
         // Set permissions on endpoints
         http.authorizeHttpRequests()
-                .requestMatchers("/h2-console/**").permitAll()
                 // Swagger endpoints must be publicly accessible
-                .requestMatchers("/").permitAll()
-                .requestMatchers(format("%s/**", restApiDocPath)).permitAll()
+                .requestMatchers("/").permitAll().requestMatchers(format("%s/**", restApiDocPath)).permitAll()
                 .requestMatchers(format("%s/**", swaggerPath)).permitAll()
-                // Allow unauthenticated access to OAuth2 endpoints
-                .requestMatchers("/oauth2/**").permitAll() // Add this line
                 // Our public endpoints
                 .requestMatchers("/api/public/**").permitAll() // public assets & end-points
-                .requestMatchers(HttpMethod.POST, "/api/readers").permitAll() // Unregistered should be able to register
+                .requestMatchers(HttpMethod.POST, "/api/readers").permitAll() //unregistered should be able to register
                 // Our private endpoints
-                // Authors
-                .requestMatchers(HttpMethod.POST, "/api/authors").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.PATCH, "/api/authors/{authorNumber}").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/authors/{authorNumber}").hasAnyRole(Role.READER, Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/authors").hasAnyRole(Role.READER, Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/authors/{authorNumber}/books").hasRole(Role.READER)
-                .requestMatchers(HttpMethod.GET, "/api/authors/top5").hasRole(Role.READER)
-                .requestMatchers(HttpMethod.GET, "/api/authors/{authorNumber}/photo").hasAnyRole(Role.READER, Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.DELETE, "/api/authors/{authorNumber}/photo").hasAnyRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/authors/{authorNumber}/coauthors").hasRole(Role.READER)
-                // End authors
-                // Books
-                .requestMatchers(HttpMethod.PUT, "/api/books/{isbn}").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.PATCH, "/api/books/{isbn}").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/books/{isbn}/avgDuration").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/books").hasAnyRole(Role.LIBRARIAN, Role.READER)
-                .requestMatchers(HttpMethod.GET, "/api/books/{isbn}").hasAnyRole(Role.READER, Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/books/top5").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/books/{isbn}/photo").hasAnyRole(Role.LIBRARIAN, Role.READER)
-                .requestMatchers(HttpMethod.DELETE, "/api/books/{isbn}/photo").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/books/suggestions").hasRole(Role.READER)
-                .requestMatchers(HttpMethod.POST, "/api/books/search").hasAnyRole(Role.LIBRARIAN, Role.READER)
-                // End books
-                // Readers
-                .requestMatchers(HttpMethod.PATCH, "/api/readers").hasRole(Role.READER)
-                .requestMatchers(HttpMethod.GET, "/api/readers").hasAnyRole(Role.READER, Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.POST, "/api/readers/search").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/readers/top5ByGenre").hasRole(Role.LIBRARIAN)
+                //authors
+                .requestMatchers(HttpMethod.POST,"/api/authors").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.PATCH,"/api/authors/{authorNumber}").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/authors/{authorNumber}").hasAnyRole(Role.READER, Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/authors").hasAnyRole(Role.READER, Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/authors/{authorNumber}/books").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.GET,"/api/authors/top5").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.GET,"/api/authors/{authorNumber}/photo").hasAnyRole(Role.READER, Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.DELETE,"/api/authors/{authorNumber}/photo").hasAnyRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/authors/{authorNumber}/coauthors").hasRole(Role.READER)
+                //end authors
+                //books
+                .requestMatchers(HttpMethod.PUT,"/api/books/{isbn}").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.PATCH,"/api/books/{isbn}").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/books/{isbn}/avgDuration").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/books").hasAnyRole(Role.LIBRARIAN, Role.READER)
+                .requestMatchers(HttpMethod.GET,"/api/books/{isbn}").hasAnyRole(Role.READER,Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/books/top5").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/books/{isbn}/photo").hasAnyRole(Role.LIBRARIAN, Role.READER)
+                .requestMatchers(HttpMethod.DELETE,"/api/books/{isbn}/photo").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/books/suggestions").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.POST,"/api/books/search").hasAnyRole(Role.LIBRARIAN, Role.READER)
+                //endBooks
+                //readers
+                .requestMatchers(HttpMethod.PATCH,"/api/readers").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.GET,"/api/readers").hasAnyRole(Role.READER, Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.POST,"/api/readers/search").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/readers/top5ByGenre").hasRole(Role.LIBRARIAN)
                 .requestMatchers(HttpMethod.GET, "/api/readers/top5").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/readers/{year}/{seq}/photo").hasAnyRole(Role.READER, Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/readers/photo").hasRole(Role.READER)
-                .requestMatchers(HttpMethod.GET, "/api/readers/top5ByGenre").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/readers/{year}/{seq}/lendings").hasRole(Role.READER)
-                .requestMatchers(HttpMethod.DELETE, "/api/readers/photo").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.GET,"/api/readers/{year}/{seq}/photo").hasAnyRole(Role.READER,Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/readers/photo").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.GET,"/api/readers/top5ByGenre").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/readers/{year}/{seq}/lendings").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.DELETE,"/api/readers/photo").hasRole(Role.READER)
                 .requestMatchers(HttpMethod.GET, "/api/readers/{year}/{seq}").hasRole(Role.LIBRARIAN)
-                // End readers
-                // Genres
-                .requestMatchers(HttpMethod.GET, "/api/genres/top5").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/genres/avgLendings").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.POST, "/api/genres/avgLendingsPerGenre").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/genres/lendingsPerMonthLastTwelveMonths").hasRole(Role.LIBRARIAN)
+                //end readers
+                //genres
+                .requestMatchers(HttpMethod.GET,"/api/genres/top5").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/genres/avgLendings").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.POST,"/api/genres/avgLendingsPerGenre").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/genres/lendingsPerMonthLastTwelveMonths").hasRole(Role.LIBRARIAN)
                 .requestMatchers(HttpMethod.GET, "/api/genres/lendingsAverageDurationPerMonth").hasRole(Role.LIBRARIAN)
-                // End genres
-                // Lendings
-                .requestMatchers(HttpMethod.GET, "/api/lendings/overdue").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/lendings/{year}/{seq}").hasAnyRole(Role.READER, Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.POST, "/api/lendings").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/lendings/avgDuration").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.GET, "/api/lendings/overdue").hasRole(Role.LIBRARIAN)
-                .requestMatchers(HttpMethod.PATCH, "/api/lendings/{year}/{seq}").hasRole(Role.READER)
-                .requestMatchers(HttpMethod.POST, "/api/lendings/search").hasAnyRole(Role.LIBRARIAN)
-                // End lendings
+                //end genres
+                //lendings
+                .requestMatchers(HttpMethod.GET,"/api/lendings/overdue").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/lendings/{year}/{seq}").hasAnyRole(Role.READER, Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.POST,"/api/lendings").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/lendings/avgDuration").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.GET,"/api/lendings/overdue").hasRole(Role.LIBRARIAN)
+                .requestMatchers(HttpMethod.PATCH,"/api/lendings/{year}/{seq}").hasRole(Role.READER)
+                .requestMatchers(HttpMethod.POST,"/api/lendings/search").hasAnyRole(Role.LIBRARIAN)
+                //end lendings
                 // Admin has access to all endpoints
                 .requestMatchers("/**").hasRole(Role.ADMIN)
                 .anyRequest().authenticated()
-                // Set up OAuth2 resource server
+                // Set up oauth2 resource server
                 .and().httpBasic(Customizer.withDefaults()).oauth2ResourceServer().jwt();
-
-
 
         return http.build();
     }
-
 
     // Used by JwtAuthenticationProvider to generate JWT tokens
     @Bean

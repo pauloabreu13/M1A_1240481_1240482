@@ -1,12 +1,12 @@
 package pt.psoft.g1.psoftg1.lendingmanagement.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import org.hibernate.StaleObjectStateException;
 import pt.psoft.g1.psoftg1.bookmanagement.model.Book;
-import pt.psoft.g1.psoftg1.idgenerate.helper.IdGen;
 import pt.psoft.g1.psoftg1.readermanagement.model.ReaderDetails;
 
 import java.time.LocalDate;
@@ -38,8 +38,8 @@ public class Lending {
      * @author pgsousa
      */
     @Id
-    private String pk;
-
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long pk;
 
     /**
      * Natural key, which is not in use as it has its own business rules.
@@ -122,7 +122,7 @@ public class Lending {
      * Constructs a new {@code Lending} object to be persisted in the database.
      * <p>
      * Sets {@code startDate} as the current date, and {@code limitDate} as the current date plus the
-     * business specified number of days a reader can take to return the book ( ).
+     * business specified number of days a reader can take to return the book ({@link Lending#MAX_DAYS_PER_LENDING}).
      *
      * @param       book {@code Book} object, which should be retrieved from the database.
      * @param       readerDetails {@code Reader} object, which should be retrieved from the database.
@@ -233,22 +233,15 @@ public class Lending {
     /**Protected empty constructor for ORM only.*/
     protected Lending() {}
 
-    @PrePersist
-    public void prePersist() {
-        if (this.pk == null || this.pk.isEmpty()) {
-            this.pk = IdGen.generateId();
-        }
-    }
-
     /**Factory method meant to be only used in bootstrapping.*/
     public static Lending newBootstrappingLending(Book book,
-                                    ReaderDetails readerDetails,
-                                    int year,
-                                    int seq,
-                                    LocalDate startDate,
-                                    LocalDate returnedDate,
-                                    int lendingDuration,
-                                    int fineValuePerDayInCents){
+                                                  ReaderDetails readerDetails,
+                                                  int year,
+                                                  int seq,
+                                                  LocalDate startDate,
+                                                  LocalDate returnedDate,
+                                                  int lendingDuration,
+                                                  int fineValuePerDayInCents){
         Lending lending = new Lending();
 
         try {
