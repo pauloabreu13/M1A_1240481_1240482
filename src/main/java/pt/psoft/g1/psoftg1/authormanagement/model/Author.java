@@ -17,8 +17,10 @@ public class Author extends EntityWithPhoto {
     @Getter
     private Long authorNumber;
 
-    @Column(name = "HEX_AUTHOR_ID", nullable = false, unique = true)
-    private String hexadecimalAuthorId;
+
+    //Usar isto para gerar o hexadecimal
+//    @Column(name = "HEX_AUTHOR_ID", nullable = false, unique = true)
+//    private String hexadecimalAuthorId;
 
     @Version
     private long version;
@@ -55,12 +57,12 @@ public class Author extends EntityWithPhoto {
         // got ORM only
     }
 
-    @PrePersist
-    public void prePersist() {
-        if (this.hexadecimalAuthorId == null || this.hexadecimalAuthorId.isEmpty()) {
-            this.hexadecimalAuthorId = IdGen.generateId();
-        }
-    }
+//    @PrePersist
+//    public void prePersist() {
+//        if (this.hexadecimalAuthorId == null || this.hexadecimalAuthorId.isEmpty()) {
+//            this.hexadecimalAuthorId = IdGen.generateId();
+//        }
+//    }
 
 
     public void applyPatch(final long desiredVersion, final UpdateAuthorRequest request) {

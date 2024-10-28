@@ -38,11 +38,11 @@ pipeline {
             }
         }
 
-        /*stage('Test') {
+        stage('Test') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn test"
             }
-        }*/
+        }
 
         stage('Package') {
             steps {
