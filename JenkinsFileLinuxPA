@@ -22,7 +22,7 @@ pipeline {
         stage('Clean') {
             steps {
                 // Run the Maven clean command to clean the project
-                sh "${MAVEN_HOME}\\bin\\mvn clean"
+                sh "${MAVEN_HOME}/bin/mvn clean"
             }
         }
 
