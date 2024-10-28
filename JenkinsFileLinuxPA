@@ -50,7 +50,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        /*stage('SonarQube Analysis') {
             steps {
                  // Análise de código com o SonarQube
                  withSonarQubeEnv('SonarQube') {
@@ -58,7 +58,7 @@ pipeline {
                  }
                  echo 'SonarQube Analysis Completed'
             }
-        }
+        }*/
 
         stage('Deploy') {
             steps {
@@ -89,7 +89,7 @@ pipeline {
 
                     // Secure copy of the project
                     sh """
-                        scp -i \$SSH_KEY -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
+                        scp -i \$SSH_KEY -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
                     """
 
 

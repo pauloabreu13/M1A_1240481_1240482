@@ -73,7 +73,7 @@ pipeline {
             steps {
                 // Run the Java application using the compiled JAR file
                 echo "Running the Java application..."
-                bat "java -jar ${WORKSPACE}\\target\\psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228"
+                bat "java -jar ${WORKSPACE}\\target\\psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8001"
             }
         }
 
