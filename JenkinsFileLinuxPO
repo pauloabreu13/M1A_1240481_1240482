@@ -59,20 +59,22 @@ pipeline {
                     // Kill previous execution of the JAR
                     sh "pkill -f psoft-g1-0.0.1-SNAPSHOT.jar || true"
 
-
-                 // Secure copy of the project
-                 bat """
-                 scp -i ${SSH_KEY} -P 11319 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
-                 """
+                    // Secure copy of the project
+                    sh """
+                    scp -i "$SSH_KEY" -P 11319 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
+                    """
 
                     echo "Deploying application..."
 
                     // Start the JAR in the background
-                   ssh -i "$SSH_KEY" -p 11319 root@vsgate-ssh.dei.isep.ipp.pt "nohup java -jar /usr/local/M1A_1240481_1240482/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
-
+                    sh """
+                    ssh -i "$SSH_KEY" -p 11319 root@vsgate-ssh.dei.isep.ipp.pt "nohup java -jar /usr/local/M1A_1240481_1240482/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
+                    """
                 }
             }
         }
+
+
 
 
     }
