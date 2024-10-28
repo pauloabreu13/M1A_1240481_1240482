@@ -5,7 +5,7 @@ pipeline {
         MAVEN_HOME = '/usr/share/maven'
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
         //PATH = "${env.MAVEN_HOME}/bin:${env.JAVA_HOME}/bin:${env.PATH}"
-        //SSH_KEY = '/path/to/your/private_key' // Chave SSH para autenticação
+        SSH_KEY = '/path/to/your/private_key' // Chave SSH para autenticação
 
         GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
         GITHUB_BRANCH = 'main'
@@ -62,45 +62,19 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // Use the SSH key with the specified credentials ID (set on Jenkins)
-                withCredentials([sshUserPrivateKey(credentialsId: 'MySSHKey', keyFileVariable: 'SSH_KEY')]) {
+                // Kill previous execution of the JAR
+                sh "pkill -f psoft-g1-0.0.1-SNAPSHOT.jar || true"
 
-                    // Stop the old version of the application running on port 2228
-                    sh """
-                    ssh -i \$SSH_KEY -o StrictHostKeyChecking=no -p 11363 root@vsgate-ssh.dei.isep.ipp.pt '
-                        # Find the PID of the process running on port 2228 and kill it
-                        pid=\$(lsof -ti:2228)
-                        if [ ! -z "\$pid" ]; then
-                            echo "Killing process ID: \$pid on port 2228"
-                            kill -9 \$pid
-                        else
-                            echo "No process found running on port 2228."
-                            fi
-                    '
-                    """
+                // Secure copy of the project
+                bat """
+                scp -i ${SSH_KEY} -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
+                """
 
+                echo "Deploying application..."
 
-                    // Create the destination directory if it doesn't exist
-                    sh """
-                    ssh -i \$SSH_KEY -o StrictHostKeyChecking=no -p 11363 root@vsgate-ssh.dei.isep.ipp.pt '
-                        mkdir -p /usr/local/M1A_1240481_1240482
-                    '
-                    """
+                // Start the JAR in the background
+                ssh -i "$SSH_KEY" -p 11363 root@vsgate-ssh.dei.isep.ipp.pt "nohup java -jar /usr/local/M1A_1240481_1240482/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
 
-                    // Secure copy of the project
-                    sh """
-                        scp -i \$SSH_KEY -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
-                    """
-
-
-                }
-            }
-        }
-
-        stage('Run Application') {
-            steps {
-                echo "Running the Java application on Linux..."
-                sh "nohup java -jar ${WORKSPACE}/target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
             }
         }
     }
