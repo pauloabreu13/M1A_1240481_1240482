@@ -12,7 +12,7 @@ pipeline {
         GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
         GITHUB_BRANCH = 'main'
         GITHUB_ID = 'githubaccesstoken'
-
+        SSH_KEY = credentials('MySSHKey')
     }
 
     stages {
@@ -60,13 +60,15 @@ pipeline {
                     sh "pkill -f psoft-g1-0.0.1-SNAPSHOT.jar || true"
 
 
-                    // Copy the JAR to the deployment directory
-                    sh "cp target/psoft-g1-0.0.1-SNAPSHOT.jar /usr/local/M1A_1240481_1240482/"
+                 // Secure copy of the project
+                 bat """
+                 scp -i ${SSH_KEY} -P 11319 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
+                 """
 
                     echo "Deploying application..."
 
                     // Start the JAR in the background
-                    sh "nohup java -jar /usr/local/M1A_1240481_1240482/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
+                   ssh -i ${SSH_KEY} -p 11319 root@vsgate-ssh.dei.isep.ipp.pt "nohup java -jar /usr/local/M1A_1240481_1240482/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
                 }
             }
         }
