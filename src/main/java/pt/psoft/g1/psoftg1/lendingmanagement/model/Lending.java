@@ -235,13 +235,13 @@ public class Lending {
 
     /**Factory method meant to be only used in bootstrapping.*/
     public static Lending newBootstrappingLending(Book book,
-                                                  ReaderDetails readerDetails,
-                                                  int year,
-                                                  int seq,
-                                                  LocalDate startDate,
-                                                  LocalDate returnedDate,
-                                                  int lendingDuration,
-                                                  int fineValuePerDayInCents){
+                                    ReaderDetails readerDetails,
+                                    int year,
+                                    int seq,
+                                    LocalDate startDate,
+                                    LocalDate returnedDate,
+                                    int lendingDuration,
+                                    int fineValuePerDayInCents){
         Lending lending = new Lending();
 
         try {
