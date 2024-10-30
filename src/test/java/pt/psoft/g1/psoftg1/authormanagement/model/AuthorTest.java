@@ -22,18 +22,18 @@ class AuthorTest {
     void setUp() {
     }
     @Test
-    void ensureNameNotNull(){
-        assertThrows(IllegalArgumentException.class, () -> new Author(null,validBio, null));
+    void ensureNameNotNull() {
+        assertThrows(IllegalArgumentException.class, () -> new Author(null, validBio, null));
     }
 
     @Test
-    void ensureBioNotNull(){
-        assertThrows(IllegalArgumentException.class, () -> new Author(validName,null, null));
+    void ensureBioNotNull() {
+        assertThrows(IllegalArgumentException.class, () -> new Author(validName, null, null));
     }
 
     @Test
     void whenVersionIsStaleItIsNotPossibleToPatch() {
-        final var subject = new Author(validName,validBio, null);
+        final var subject = new Author(validName, validBio, null);
 
         assertThrows(StaleObjectStateException.class, () -> subject.applyPatch(999, request));
     }

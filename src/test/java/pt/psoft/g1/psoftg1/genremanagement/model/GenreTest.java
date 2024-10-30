@@ -47,5 +47,4 @@ class GenreTest {
         final var genre = new Genre("Some genre");
         assertEquals("Some genre", genre.toString());
     }
-
 }
