@@ -19,6 +19,7 @@ pipeline {
                 git url: "${GITHUB_URL}", branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_ID}"
             }
         }
+
         stage('Clean') {
             steps {
                 // Run the Maven clean command to clean the project
@@ -38,9 +39,22 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Unit Tests') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn test"
+                bat "${MAVEN_HOME}\\bin\\mvn surefire:test"
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                bat "${MAVEN_HOME}\\bin\\mvn failsafe:integration-test failsafe:verify"
+            }
+        }
+
+        stage('Mutation Testing') {
+            steps {
+                // Run the PIT mutation testing tool to generate mutation test reports
+                bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
             }
         }
 
@@ -81,6 +95,7 @@ pipeline {
             }
         }
     }
+
     post {
         success {
             // Actions to take when the pipeline succeeds
@@ -91,4 +106,5 @@ pipeline {
             echo 'Pipeline failed!'
         }
     }
+
 }
