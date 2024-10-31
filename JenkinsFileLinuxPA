@@ -41,20 +41,20 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                bat "${MAVEN_HOME}\\bin\\mvn surefire:test"
+                sh "${MAVEN_HOME}\\bin\\mvn surefire:test"
             }
         }
 
         stage('Integration Tests') {
             steps {
-                bat "${MAVEN_HOME}\\bin\\mvn failsafe:integration-test failsafe:verify"
+                sh "${MAVEN_HOME}\\bin\\mvn failsafe:integration-test failsafe:verify"
             }
         }
 
         stage('Mutation Testing') {
             steps {
                 // Run the PIT mutation testing tool to generate mutation test reports
-                bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
+                sh "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
             }
         }
 
