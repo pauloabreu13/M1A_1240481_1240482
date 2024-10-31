@@ -41,10 +41,22 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Unit Tests') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn test"
+                sh "${MAVEN_HOME}/bin/mvn surefire:test"
             }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn failsafe:integration-test failsafe:verify"
+            }
+        }
+
+        stage('Mutation Testing') {
+                    steps {
+                        sh "${MAVEN_HOME}/bin/mvn org.pitest:pitest-maven:mutationCoverage"
+                    }
         }
 
         stage('Package') {
