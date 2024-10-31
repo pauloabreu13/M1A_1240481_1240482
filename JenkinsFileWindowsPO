@@ -57,7 +57,7 @@ pipeline {
         stage('Package') {
             steps {
                 // Run the Maven package command to package the project
-                bat "${MAVEN_HOME}\\bin\\mvn package"
+                bat "${MAVEN_HOME}\\bin\\mvn package -DskipTests"
             }
         }
 
