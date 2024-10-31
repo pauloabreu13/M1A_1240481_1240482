@@ -23,9 +23,9 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Clean') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn clean install"
+                sh "${MAVEN_HOME}/bin/mvn clean "
             }
         }
 
