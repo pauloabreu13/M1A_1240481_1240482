@@ -40,10 +40,28 @@ public class AuthorServiceImplIntegrationTest {
     }
 
     @Test
-    public void whenValidId_thenAuthorShouldBeFound() {
-        Long id = 1L;
-        Optional<Author> found = authorService.findByAuthorNumber(id);
-        found.ifPresent(author -> assertThat(author.getId())
-                .isEqualTo(id));
+    public void whenValidAuthor_thenAuthorShouldBeCreated() {
+        Author alex = new Author("Alex", "O Alex escreveu livros", null);
+        CreateAuthorRequest request = new CreateAuthorRequest(alex.getName(), alex.getBio(), null, null);
+
+        Mockito.when(authorRepository.save(Mockito.any(Author.class))).thenReturn(alex);
+
+        Author created = authorService.create(request);
+
+        assertThat(created.getName()).isEqualTo("Alex");
+        assertThat(created.getBio()).isEqualTo("O Alex escreveu livros");
+    }
+
+    @Test
+    public void whenFindByAuthorNumber_thenReturnAuthor() {
+        Author alex = new Author("Alex", "O Alex escreveu livros", null);
+        Mockito.when(authorRepository.findByAuthorNumber(alex.getAuthorNumber())).thenReturn(Optional.of(alex));
+
+        Optional<Author> found = authorService.findByAuthorNumber(alex.getAuthorNumber());
+
+        assertThat(found.isPresent()).isTrue();
+        assertThat(found.get().getName()).isEqualTo("Alex");
+        assertThat(found.get().getBio()).isEqualTo("O Alex escreveu livros");
     }
 }
+

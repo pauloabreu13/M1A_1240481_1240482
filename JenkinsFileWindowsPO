@@ -34,18 +34,33 @@ pipeline {
                 bat "${MAVEN_HOME}\\bin\\mvn compile"
             }
         }
-        stage('Test') {
+
+       stage('Unit Tests') {
             steps {
-                // Run the Maven test command to test the project
-                bat "${MAVEN_HOME}\\bin\\mvn test"
+                bat "${MAVEN_HOME}\\bin\\mvn surefire:test"
+            }
+       }
+
+        stage('Integration Tests') {
+            steps {
+                bat "${MAVEN_HOME}\\bin\\mvn failsafe:integration-test failsafe:verify"
             }
         }
+
+        stage('Mutation Testing') {
+            steps {
+                // Run the PIT mutation testing tool to generate mutation test reports
+                bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
+            }
+        }
+
         stage('Package') {
             steps {
                 // Run the Maven package command to package the project
                 bat "${MAVEN_HOME}\\bin\\mvn package"
             }
         }
+
 
         stage('SonarQube Analysis') {
                     steps {
