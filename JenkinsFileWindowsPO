@@ -78,18 +78,5 @@ pipeline {
 
             }
         }
-
-      stage('Run Application') {
-          steps {
-              // Run the Java application using the compiled JAR file with a timeout
-              echo "Running the Java application for 30 seconds..."
-              bat """
-                  start "" /b java -jar ${WORKSPACE}\\target\\psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081
-                  timeout /t 30 >nul
-                  taskkill /f /im java.exe
-              """
-          }
-      }
-
     }
 }
