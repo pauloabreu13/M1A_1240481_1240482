@@ -80,10 +80,21 @@ pipeline {
                     // Parar qualquer execução anterior do JAR usando Windows commands
                     bat '''
                         for /f "tokens=5" %%a in ('netstat -ano ^| find "8081"') do taskkill /F /PID %%a 2>NUL || exit /b 0
-                        start /B java -jar target\psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081
+                        start /B java -jar target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081
                     '''
                     echo '====== Finished Deploy Stage ======'
                 }
+            }
+        }
+
+        post {
+            success {
+                // Actions to take when the pipeline succeeds
+                echo 'Pipeline completed successfully!'
+            }
+            failure {
+                // Actions to take when the pipeline fails
+                echo 'Pipeline failed!'
             }
         }
     }
