@@ -2,11 +2,9 @@ pipeline {
     agent any
 
     environment {
-
         // LINUX
         MAVEN_HOME = '/usr/share/maven'
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
-
 
         // Define the GitHub repository URL as an environment variable
         GITHUB_URL = 'https://github.com/pedrojcoliveira/M1A_1240481_1240482.git'
@@ -25,7 +23,7 @@ pipeline {
 
         stage('Clean') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn clean "
+                sh "${MAVEN_HOME}/bin/mvn clean"
             }
         }
 
@@ -54,9 +52,9 @@ pipeline {
         }
 
         stage('Mutation Testing') {
-                    steps {
-                        sh "${MAVEN_HOME}/bin/mvn org.pitest:pitest-maven:mutationCoverage"
-                    }
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn org.pitest:pitest-maven:mutationCoverage"
+            }
         }
 
         stage('Package') {
@@ -64,7 +62,6 @@ pipeline {
                 sh "${MAVEN_HOME}/bin/mvn package -DskipTests"
             }
         }
-
 
         stage('Deploy') {
             steps {
@@ -87,5 +84,4 @@ pipeline {
             }
         }
     }
-  }
 }

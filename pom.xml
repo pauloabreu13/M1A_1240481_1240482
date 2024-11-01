@@ -23,10 +23,6 @@
 		<!-- automatically run annotation processors within the incremental compilation -->
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 
-
-		<!-- Pitest Version Configuration-->
-		<pitest-maven>1.11.0</pitest-maven>
-		<pitest-junit5-plugin>1.1.2</pitest-junit5-plugin>
 	</properties>
 
 	<dependencies>
@@ -148,21 +144,21 @@
 			<plugin>
 				<groupId>org.pitest</groupId>
 				<artifactId>pitest-maven</artifactId>
-				<version>${pitest-maven}</version>
+				<version>1.11.0</version>
 				<dependencies>
 					<dependency> <!-- Only required because PITest does not work with JUnit5 without it -->
 						<groupId>org.pitest</groupId>
 						<artifactId>pitest-junit5-plugin</artifactId>
-						<version>${pitest-junit5-plugin}</version>
+						<version>1.1.2</version>
 					</dependency>
 				</dependencies>
 				<configuration>
-
-					<outputFormats>
-						<outputFormat>XML</outputFormat>
-						<outputFormat>HTML</outputFormat>
-					</outputFormats>
-					<!--<verbose>true</verbose>-->
+					<targetClasses>
+						<param>pt.psoft.g1.*</param>
+					</targetClasses>
+					<targetTests>
+						<param>pt.psoft.g1.*Test</param>
+					</targetTests>
 				</configuration>
 
 			</plugin>
@@ -176,10 +172,10 @@
 					<includes>
 						<include>**/*Test.java</include>
 					</includes>
-				</configuration>
-			</plugin>
+		   </configuration>
+	   </plugin>
 
-			<!-- Plugin para testes de integração -->
+   <!-- Plugin para testes de integração -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
