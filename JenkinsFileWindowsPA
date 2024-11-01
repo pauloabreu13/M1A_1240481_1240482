@@ -86,16 +86,16 @@ pipeline {
                 }
             }
         }
+    }
 
-        post {
-            success {
-                // Actions to take when the pipeline succeeds
-                echo 'Pipeline completed successfully!'
-            }
-            failure {
-                // Actions to take when the pipeline fails
-                echo 'Pipeline failed!'
-            }
+    post {
+        success {
+            // Actions to take when the pipeline succeeds
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            // Actions to take when the pipeline fails
+            echo 'Pipeline failed!'
         }
     }
 }
