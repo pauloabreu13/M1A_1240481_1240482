@@ -67,7 +67,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat '''mvn sonar:sonar -Dsonar.projectKey=SonarQubeToken -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000'''
+                    bat '''mvn sonar:sonar -Dsonar.projectKey=OdSoftProject -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000'''
                     echo 'SonarQube Analysis Completed'
                 }
             }
@@ -75,19 +75,16 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // Run the Maven deploy command to deploy the project and save to the target folder inside the project
-                bat "${MAVEN_HOME}\\bin\\mvn deploy -DaltDeploymentRepository=local::default::file:${WORKSPACE}\\target"
-
+                script {
+                    echo '====== Starting Deploy Stage ======'
+                    // Parar qualquer execução anterior do JAR usando Windows commands
+                    bat '''
+                        for /f "tokens=5" %%a in ('netstat -ano ^| find "8081"') do taskkill /F /PID %%a 2>NUL || exit /b 0
+                        start /B java -jar target\psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081
+                    '''
+                    echo '====== Finished Deploy Stage ======'
+                }
             }
         }
-
-        stage('Run Application') {
-            steps {
-                // Run the Java application using the compiled JAR file
-                echo "Running the Java application..."
-                bat "java -jar ${WORKSPACE}\\target\\psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081"
-            }
-        }
-
     }
 }
