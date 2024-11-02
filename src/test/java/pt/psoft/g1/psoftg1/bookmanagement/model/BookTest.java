@@ -133,11 +133,6 @@ class BookTest {
                 "Expected StaleObjectStateException due to version mismatch.");
     }
 
-    
-
-
-
-
 
 }
 

@@ -35,11 +35,11 @@ pipeline {
             }
         }
 
-       stage('Unit Tests') {
+        stage('Unit Tests') {
             steps {
                 bat "${MAVEN_HOME}\\bin\\mvn surefire:test"
             }
-       }
+        }
 
         stage('Integration Tests') {
             steps {
@@ -47,10 +47,37 @@ pipeline {
             }
         }
 
-        stage('Mutation Testing') {
-            steps {
-                // Run the PIT mutation testing tool to generate mutation test reports
-                bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
+        stage('Parallel Stages') {
+            parallel {
+                stage('Mutation Tests') {
+                    steps {
+                        bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
+                    }
+                }
+
+                stage('SonarQube Analysis') {
+                    steps {
+                        withSonarQubeEnv('sonarQscanner') {
+                            bat '''
+                                mvn sonar:sonar \
+                                -Dsonar.projectKey=lms-main \
+                                -Dsonar.projectName='lms-main' \
+                                -Dsonar.host.url=http://localhost:9000 \
+                                -Dsonar.qualitygate.wait=true
+                            '''
+                            echo 'SonarQube Analysis Completed'
+                        }
+
+                        script {
+                            timeout(time: 2, unit: 'MINUTES') {
+                                def qualityGate = waitForQualityGate()
+                                if (qualityGate.status != 'OK') {
+                                    error "Pipeline aborted due to quality gate failure: ${qualityGate.status}"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -61,21 +88,10 @@ pipeline {
             }
         }
 
-
-        stage('SonarQube Analysis') {
-                    steps {
-                        withSonarQubeEnv('SonarQube') {
-                            bat '''mvn sonar:sonar -Dsonar.projectKey=OdSoft -Dsonar.projectName='OdSoft' -Dsonar.host.url=http://localhost:9000'''
-                            echo 'SonarQube Analysis Completed'
-                        }
-                    }
-        }
-
         stage('Deploy') {
             steps {
                 // Run the Maven deploy command to deploy the project and save to the target folder inside the project
                 bat "${MAVEN_HOME}\\bin\\mvn deploy -DaltDeploymentRepository=local::default::file:${WORKSPACE}\\target"
-
             }
         }
 
@@ -89,14 +105,14 @@ pipeline {
         */
     }
 
-       post {
-            success {
-                // Actions to take when the pipeline succeeds
-                echo 'Pipeline completed successfully!'
-            }
-            failure {
-                // Actions to take when the pipeline fails
-                echo 'Pipeline failed!'
-            }
-       }
+    post {
+        success {
+            // Actions to take when the pipeline succeeds
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            // Actions to take when the pipeline fails
+            echo 'Pipeline failed!'
+        }
+    }
 }
