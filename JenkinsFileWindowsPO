@@ -60,8 +60,8 @@ pipeline {
                         withSonarQubeEnv('sonarQscanner') {
                             bat '''
                                 mvn sonar:sonar \
-                                -Dsonar.projectKey=lms-main \
-                                -Dsonar.projectName='lms-main' \
+                                -Dsonar.projectKey=OdSoft \
+                                -Dsonar.projectName='OdSoft' \
                                 -Dsonar.host.url=http://localhost:9000 \
                                 -Dsonar.qualitygate.wait=true
                             '''
