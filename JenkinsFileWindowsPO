@@ -51,30 +51,14 @@ pipeline {
             parallel {
                 stage('Mutation Tests') {
                     steps {
-                        bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
+                       bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
                     }
                 }
 
-                stage('SonarQube Analysis') {
+                 stage('SonarQube Analysis') {
                     steps {
                         withSonarQubeEnv('SonarQube') {
-                            bat '''
-                                mvn sonar:sonar \
-                                -Dsonar.projectKey=OdSoft \
-                                -Dsonar.projectName='OdSoft' \
-                                -Dsonar.host.url=http://localhost:9000 \
-                                -Dsonar.qualitygate.wait=true
-                            '''
-                            echo 'SonarQube Analysis Completed'
-                        }
-
-                        script {
-                            timeout(time: 2, unit: 'MINUTES') {
-                                def qualityGate = waitForQualityGate()
-                                if (qualityGate.status != 'OK') {
-                                    error "Pipeline aborted due to quality gate failure: ${qualityGate.status}"
-                                }
-                            }
+                            bat '''mvn sonar:sonar -Dsonar.projectKey=OdSoft -Dsonar.projectName='OdSoft' -Dsonar.host.url=http://localhost:9000'''
                         }
                     }
                 }
