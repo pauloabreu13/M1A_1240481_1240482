@@ -47,9 +47,16 @@ pipeline {
             }
         }
 
+        stage('Package') {
+            steps {
+                // Run the Maven package command to package the project
+                bat "${MAVEN_HOME}\\bin\\mvn package -DskipTests"
+            }
+        }
+
         stage('Parallel Stages') {
             parallel {
-                stage('Mutation Testing') {
+                stage('Mutation Tests') {
                     steps {
                        bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
                     }
@@ -62,13 +69,6 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-
-        stage('Package') {
-            steps {
-                // Run the Maven package command to package the project
-                bat "${MAVEN_HOME}\\bin\\mvn package -DskipTests"
             }
         }
 
