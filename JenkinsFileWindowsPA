@@ -50,13 +50,6 @@ pipeline {
             }
         }
 
-        stage('Mutation Testing') {
-            steps {
-                // Run the PIT mutation testing tool to generate mutation test reports
-                bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
-            }
-        }
-
         stage('Package') {
             steps {
                 // Run the Maven package command to package the project
@@ -64,25 +57,34 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat '''mvn sonar:sonar -Dsonar.projectKey=OdSoftProject -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000'''
-                    echo 'SonarQube Analysis Completed'
+        stage('Parallel Stages') {
+            parallel {
+
+                stage('Mutation Testing') {
+                    steps {
+                        // Run the PIT mutation testing tool to generate mutation test reports
+                        bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
+                    }
                 }
+
+                stage('SonarQube Analysis') {
+                    steps {
+                        withSonarQubeEnv('SonarQube') {
+                            bat '''mvn sonar:sonar -Dsonar.projectKey=OdSoftProject -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000'''
+                        }
+                    }
+                }
+
             }
         }
 
         stage('Deploy') {
             steps {
                 script {
-                    echo '====== Starting Deploy Stage ======'
-                    // Parar qualquer execução anterior do JAR usando Windows commands
                     bat '''
                         for /f "tokens=5" %%a in ('netstat -ano ^| find "8081"') do taskkill /F /PID %%a 2>NUL || exit /b 0
                         start /B java -jar target/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=8081
                     '''
-                    echo '====== Finished Deploy Stage ======'
                 }
             }
         }

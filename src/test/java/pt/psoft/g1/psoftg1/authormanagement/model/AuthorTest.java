@@ -5,11 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pt.psoft.g1.psoftg1.authormanagement.services.CreateAuthorRequest;
 import pt.psoft.g1.psoftg1.authormanagement.services.UpdateAuthorRequest;
+import pt.psoft.g1.psoftg1.exceptions.ConflictException;
 import pt.psoft.g1.psoftg1.shared.model.EntityWithPhoto;
+import pt.psoft.g1.psoftg1.shared.model.Name;
 import pt.psoft.g1.psoftg1.shared.model.Photo;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 class AuthorTest {
     private final String validName = "João Alberto";
@@ -81,6 +84,97 @@ class AuthorTest {
         Photo photo = author.getPhoto();
         assertNotNull(photo);
         assertEquals("photoTest.jpg", photo.getPhotoFile());
+    }
+
+    @Test
+    void testRemovePhotoThrowsConflictExceptionForInvalidVersion() {
+        // ARRANGE
+        Author author = new Author(validName, validBio, "photo.jpg");
+        long invalidVersion = author.getVersion() + 1;
+
+        // ACT & ASSERT
+        assertThrows(ConflictException.class, () -> author.removePhoto(invalidVersion));
+    }
+
+    @Test
+    void testRemovePhotoWithValidVersion() {
+        // ARRANGE
+        Author author = new Author(validName, validBio, "photo.jpg");
+        long validVersion = author.getVersion();
+
+        // ACT
+        author.removePhoto(validVersion);
+
+        // ASSERT
+        assertNull(author.getPhoto());
+    }
+
+    @Test
+    void testGettersForConsistency() {
+        // ARRANGE
+        String photoURI = "photo.jpg";
+
+        // ACT
+        Author author = new Author(validName, validBio, photoURI);
+
+        // ASSERT
+        assertEquals(validName, author.getName());
+        assertEquals(validBio, author.getBio());
+        assertEquals(photoURI, author.getPhoto().getPhotoFile());
+    }
+
+    @Test
+    void testGetIdReturnsCorrectId() {
+        // ARRANGE
+        Author author = new Author(validName, validBio, null);
+        Long expectedId = author.getId();
+
+        // ACT
+        Long actualId = author.getId();
+
+        // ASSERT
+        assertEquals(expectedId, actualId);
+    }
+
+    @Test
+    void testGetAuthorNumber() {
+        // ARRANGE
+        Author author = new Author(validName, validBio, null);
+        Long expectedNumber = author.getAuthorNumber();
+
+        // ACT
+        Long actualNumber = author.getAuthorNumber();
+
+        // ASSERT
+        assertEquals(expectedNumber, actualNumber);
+    }
+
+    @Test
+    void testApplyPatchUpdatesNameWhenNotNull() {
+        // ARRANGE
+        Author author = new Author(new String("NomeValido"), validBio, null);
+        UpdateAuthorRequest request = new UpdateAuthorRequest(null, "NovoNome", null, null);
+        long currentVersion = author.getVersion();
+
+        // ACT
+        author.applyPatch(currentVersion, request);
+
+        // ASSERT
+        assertEquals("NovoNome", author.getName().toString());
+    }
+
+    @Test
+    void testApplyPatchUpdatesBioWhenNotNull() {
+        // ARRANGE
+        Author author = new Author(new String("NomeValido"), "Biografia Antiga", null);
+        UpdateAuthorRequest request = new UpdateAuthorRequest("Nova Biografia", null, null, null);
+        long currentVersion = author.getVersion();
+
+        // ACT
+        author.applyPatch(currentVersion, request);
+
+        // ASSERT
+        assertEquals("Nova Biografia", author.getBio());
     }
 }
 
