@@ -154,10 +154,10 @@
 				</dependencies>
 				<configuration>
 					<targetClasses>
-						<param>pt.psoft.g1.*</param>
+						<param>pt.psoft.g1.*.model.*</param>
 					</targetClasses>
 					<targetTests>
-						<param>pt.psoft.g1.*Test</param>
+						<param>pt.psoft.g1.*.model.*Test</param>
 					</targetTests>
 				</configuration>
 

@@ -131,4 +131,32 @@ class LendingTest {
         assertNull(lending.getReturnedDate());
     }
 
+    //Black Box Unit Tests
+    @Test
+    void testConstructorWithValidYearAndSequential() {
+        // Arrange
+        int year = 2024;
+        int sequential = 23;
+        String expectedLendingNumber = "2024/23";
+
+        // Act
+        LendingNumber lendingNumber = new LendingNumber(year, sequential);
+
+        // Assert
+        assertEquals(expectedLendingNumber, lendingNumber.toString());
+    }
+
+    @Test
+    void testConstructorWithInvalidYearThrowsException() {
+        // Arrange
+        int invalidYear = 1969;
+        int sequential = 1;
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new LendingNumber(invalidYear, sequential));
+    }
+
+
+
+
 }

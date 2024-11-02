@@ -67,4 +67,18 @@ class TitleTest {
         assertEquals("Some other title", title.toString());
     }
 
+
+    //Unit Test
+    @Test
+    void testGetTitle() {
+        // Arrange
+        String validTitle = "A Valid Book Title";
+
+        // Act
+        Title title = new Title(validTitle);
+
+        // Assert
+        assertEquals(validTitle, title.getTitle());
+    }
+
 }

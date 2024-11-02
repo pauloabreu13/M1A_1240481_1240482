@@ -49,4 +49,19 @@ class DescriptionTest {
         assertEquals("Some other description", description.toString());
     }
 
+
+    @Test
+    void ensureBlankDescriptionIsTreatedAsNull() {
+        // Arrange
+        final var description = new Description("Initial description");
+
+        // Act
+        description.setDescription("   ");
+
+        // Assert
+        assertNull(description.toString(), "Description should be null when set to a blank value.");
+    }
+
+
+
 }

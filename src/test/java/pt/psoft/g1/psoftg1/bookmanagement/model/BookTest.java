@@ -1,5 +1,6 @@
 package pt.psoft.g1.psoftg1.bookmanagement.model;
 
+import org.hibernate.StaleObjectStateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pt.psoft.g1.psoftg1.authormanagement.model.Author;
@@ -65,6 +66,7 @@ class BookTest {
     }
 
 
+    //Unit tests
 
     @Test
     void testApplyPatchWithValidVersionAndTitleUpdate() {
@@ -118,6 +120,23 @@ class BookTest {
         assertEquals(authors, book.getAuthors());
         assertEquals(photoURI, book.getPhoto().getPhotoFile());
     }
+
+    @Test
+    void testApplyPatch_VersionMismatchThrowsStaleObjectStateException() {
+        // Arrange: Set an incorrect version and create a mock UpdateBookRequest.
+        book = new Book();
+        long incorrectVersion = 2L;
+        UpdateBookRequest request = mock(UpdateBookRequest.class);
+
+        // Act & Assert: Call applyPatch with a mismatched version and verify the exception.
+        assertThrows(StaleObjectStateException.class, () -> book.applyPatch(incorrectVersion, request),
+                "Expected StaleObjectStateException due to version mismatch.");
+    }
+
+    
+
+
+
 
 
 }
