@@ -57,7 +57,7 @@ pipeline {
 
                 stage('SonarQube Analysis') {
                     steps {
-                        withSonarQubeEnv('sonarQscanner') {
+                        withSonarQubeEnv('SonaQube') {
                             bat '''
                                 mvn sonar:sonar \
                                 -Dsonar.projectKey=OdSoft \
