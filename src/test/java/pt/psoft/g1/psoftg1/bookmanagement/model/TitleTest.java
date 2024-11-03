@@ -1,6 +1,7 @@
 package pt.psoft.g1.psoftg1.bookmanagement.model;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -80,5 +81,31 @@ class TitleTest {
         // Assert
         assertEquals(validTitle, title.getTitle());
     }
+
+
+    //White Box Test
+    @Test
+    void testSetTitleWithValidTitle() {
+        // Arrange
+        // Use TitleFactory to create a Title object with an initial title
+        Title originalTitle = TitleFactory.createTitle("Initial Title");
+
+        // Wrap the Title object with a Mockito spy to monitor interactions on it
+        Title spyTitle = Mockito.spy(originalTitle);
+
+        // Act
+        // Call setTitle with a new valid title
+        spyTitle.setTitle("Effective Java");
+
+        // Assert
+        // Verify that setTitle was called with "Effective Java" as the argument
+        Mockito.verify(spyTitle).setTitle("Effective Java");
+
+        // Confirm that the title was correctly set to "Effective Java"
+        assertEquals("Effective Java", spyTitle.getTitle());
+    }
+
+
+
 
 }

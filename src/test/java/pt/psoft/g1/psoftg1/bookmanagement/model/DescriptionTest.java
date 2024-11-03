@@ -1,8 +1,11 @@
 package pt.psoft.g1.psoftg1.bookmanagement.model;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 class DescriptionTest {
 
@@ -62,6 +65,54 @@ class DescriptionTest {
         assertNull(description.toString(), "Description should be null when set to a blank value.");
     }
 
+    @Test
+    void testSetDescriptionWithEmptyString() {
+        // Arrange
+        String emptyDescription = "";
 
+        // Act
+        Description description = DescriptionFactory.createDescription(emptyDescription);
+
+        // Assert
+        assertNull(description.toString());
+    }
+
+
+    //White Box Testing
+    @Test
+    void testSetDescriptionExceedsMaxLength() {
+        // Arrange
+        String longDescription = "a".repeat(4097);
+
+        // Spy on Description instance
+        Description spyDescription = Mockito.spy(new Description(null));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> spyDescription.setDescription(longDescription)
+        );
+
+        // Verify setDescription was called with the long input
+        verify(spyDescription).setDescription(longDescription);
+        assertEquals("Description has a maximum of 4096 characters", exception.getMessage());
+    }
+
+
+    @Test
+    void testSetDescriptionWithNull() {
+        // Arrange
+        String nullDescription = null;
+
+        // Spy on Description instance
+        Description spyDescription = Mockito.spy(new Description(nullDescription));
+
+        // Act
+        spyDescription.setDescription(nullDescription);
+
+        // Verify setDescription was called with null
+        verify(spyDescription).setDescription(nullDescription);
+        assertNull(spyDescription.toString());
+    }
 
 }

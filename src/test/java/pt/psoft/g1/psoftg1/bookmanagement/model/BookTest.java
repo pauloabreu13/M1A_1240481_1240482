@@ -3,6 +3,7 @@ package pt.psoft.g1.psoftg1.bookmanagement.model;
 import org.hibernate.StaleObjectStateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import pt.psoft.g1.psoftg1.authormanagement.model.Author;
 import pt.psoft.g1.psoftg1.bookmanagement.services.UpdateBookRequest;
 import pt.psoft.g1.psoftg1.exceptions.ConflictException;
@@ -132,6 +133,7 @@ class BookTest {
         assertThrows(StaleObjectStateException.class, () -> book.applyPatch(incorrectVersion, request),
                 "Expected StaleObjectStateException due to version mismatch.");
     }
+
 
 
 }
