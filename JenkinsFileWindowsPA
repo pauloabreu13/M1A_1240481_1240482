@@ -19,21 +19,18 @@ pipeline {
 
         stage('Clean') {
             steps {
-                // Run the Maven clean command to clean the project
                 bat "${MAVEN_HOME}\\bin\\mvn clean"
             }
         }
 
         stage('Validate') {
             steps {
-                // Run the Maven validate command to validate the project
                 bat "${MAVEN_HOME}\\bin\\mvn validate"
             }
         }
 
         stage('Compile') {
             steps {
-                // Run the Maven compile command to compile the project
                 bat "${MAVEN_HOME}\\bin\\mvn compile"
             }
         }
@@ -52,7 +49,6 @@ pipeline {
 
         stage('Package') {
             steps {
-                // Run the Maven package command to package the project
                 bat "${MAVEN_HOME}\\bin\\mvn package -DskipTests"
             }
         }
@@ -62,7 +58,6 @@ pipeline {
 
                 stage('Mutation Testing') {
                     steps {
-                        // Run the PIT mutation testing tool to generate mutation test reports
                         bat "${MAVEN_HOME}\\bin\\mvn org.pitest:pitest-maven:mutationCoverage"
                     }
                 }
@@ -92,11 +87,9 @@ pipeline {
 
     post {
         success {
-            // Actions to take when the pipeline succeeds
             echo 'Pipeline completed successfully!'
         }
         failure {
-            // Actions to take when the pipeline fails
             echo 'Pipeline failed!'
         }
     }

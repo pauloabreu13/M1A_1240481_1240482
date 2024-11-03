@@ -23,7 +23,6 @@ pipeline {
 
         stage('Clean') {
             steps {
-                // Run the Maven clean command to clean the project
                 sh "${MAVEN_HOME}/bin/mvn clean"
             }
         }
@@ -52,25 +51,29 @@ pipeline {
             }
         }
 
-        stage('Mutation Testing') {
-            steps {
-                sh "${MAVEN_HOME}/bin/mvn org.pitest:pitest-maven:mutationCoverage"
-            }
-        }
-
         stage('Package') {
             steps {
                 sh "${MAVEN_HOME}/bin/mvn package -DskipTests"
             }
         }
 
-        /*stage('SonarQube Analysis') {
-            steps {
-                 // Análise de código com o SonarQube
-                 withSonarQubeEnv('SonarQube') {
-                      sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=SonarQubeToken -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000"
-                 }
-                 echo 'SonarQube Analysis Completed'
+        /*stage('Parallel Stages') {
+            parallel {*/
+
+                stage('Mutation Testing') {
+                    steps {
+                        sh "${MAVEN_HOME}/bin/mvn org.pitest:pitest-maven:mutationCoverage"
+                    }
+                }
+
+                /*stage('SonarQube Analysis') {
+                    steps {
+                         withSonarQubeEnv('SonarQube') {
+                              sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=SonarQubeToken -Dsonar.projectName='SonarQube' -Dsonar.host.url=http://localhost:9000"
+                         }
+                    }
+                }
+
             }
         }*/
 
@@ -85,8 +88,6 @@ pipeline {
                     scp -i "$SSH_KEY" -P 11363 target/psoft-g1-0.0.1-SNAPSHOT.jar root@vsgate-ssh.dei.isep.ipp.pt:/usr/local/M1A_1240481_1240482
                     """
 
-                    echo "Deploying application..."
-
                     // Start the JAR in the background
                     sh """
                     ssh -i "$SSH_KEY" -p 11363 root@vsgate-ssh.dei.isep.ipp.pt "nohup java -jar /usr/local/M1A_1240481_1240482/psoft-g1-0.0.1-SNAPSHOT.jar --server.port=2228 > /dev/null 2>&1 &"
@@ -98,11 +99,9 @@ pipeline {
 
     post {
         success {
-            // Actions to take when the pipeline succeeds
             echo 'Pipeline completed successfully!'
         }
         failure {
-            // Actions to take when the pipeline fails
             echo 'Pipeline failed!'
         }
     }
