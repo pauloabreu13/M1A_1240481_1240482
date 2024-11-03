@@ -40,4 +40,35 @@ public class AuthorRepositoryIT {
         assertThat(list.get(0).getName())
                 .isEqualTo(alex.getName());
     }
+
+    @Test
+    public void whenSearchingForUnknownAuthor_thenReturnsNoResults() {
+        // ARRANGE
+        String missingAuthorName = "UnknownAuthor";
+
+        // ACT
+        List<Author> resultAuthors = authorRepository.searchByNameName(missingAuthorName);
+
+        // ASSERT
+        assertThat(resultAuthors).isNotNull();
+        assertThat(resultAuthors).hasSize(0);
+    }
+
+    @Test
+    public void givenExistingAuthorName_whenSearchByName_thenAuthorIsFound() {
+        //ARRANGE
+        Author authorSample = new Author("Alex", "O Alex escreveu livros", null);
+        entityManager.persist(authorSample);
+        entityManager.flush();
+
+        //ACT
+        List<Author> foundAuthors = authorRepository.searchByNameName(authorSample.getName());
+
+        //ASSERT
+        assertThat(foundAuthors).hasSize(1);
+        assertThat(foundAuthors)
+                .extracting(Author::getName)
+                .containsExactly(authorSample.getName());
+    }
+
 }
