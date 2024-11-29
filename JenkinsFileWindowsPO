@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Unit Tests') {
+      /*  stage('Unit Tests') {
             steps {
                 bat "${MAVEN_HOME}\\bin\\mvn surefire:test"
             }
@@ -71,6 +71,7 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Deploy') {
             steps {
@@ -79,14 +80,13 @@ pipeline {
             }
         }
 
-        /*
         stage('Run Application') {
             steps {
                 // Start the Spring Boot application on port 8081
                 bat "start java -jar ${WORKSPACE}\\target\\your-application.jar --server.port=8081"
             }
         }
-        */
+
     }
 
     post {

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -109,6 +110,25 @@ class BookServiceIT {
         assertEquals("Genre not found", thrown.getMessage());
     }
 
+    @Test
+    void whenCreateBook_thenBookIsSavedAndFound() {
+        // Arrange
+        CreateBookRequest request = new CreateBookRequest();
+        request.setTitle(validTitle);
+        request.setDescription("Uma descrição para o livro.");
+        request.setGenre(validGenre.getGenre());
+        request.setAuthors(Arrays.asList(validAuthor1.getId()));
+
+        // Act
+        Book savedBook = bookService.create(request, "9789720706386");
+
+        // Assert
+        Book foundBook = bookRepository.findByIsbn(savedBook.getIsbn()).orElse(null);
+        assertThat(foundBook).isNotNull();
+        assertThat(foundBook.getTitle().getTitle().trim()).isEqualTo(validTitle.trim());
+        assertThat(foundBook.getGenre().getGenre().trim()).isEqualTo(validGenre.getGenre().trim());
+        assertThat(foundBook.getAuthors()).contains(validAuthor1);
+    }
 
 //    Testes Unitários ao Service
 //    @Test

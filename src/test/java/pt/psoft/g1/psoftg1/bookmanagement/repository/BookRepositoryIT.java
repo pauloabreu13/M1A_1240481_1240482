@@ -64,7 +64,7 @@ class BookRepositoryIT {
     void whenDeleteBook_thenBookShouldNotExist() {
         // Act
         bookRepository.delete(testBook);
-        entityManager.flush(); // Ensure deletion is executed
+        entityManager.flush();
 
         // Assert
         Book found = bookRepository.findByIsbn(testBook.getIsbn()).orElse(null);
